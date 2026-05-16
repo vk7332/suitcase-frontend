@@ -1,0 +1,133 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/utils/supabase/supabaseClient";
+import { useNavigate } from "react-router-dom";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+
+export default function Dashboard() {
+    const navigate = useNavigate();
+
+    const [user, setUser] = useState<any>(null);
+    const [cases, setCases] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => {
+            console.warn("Dashboard: Loading timeout, showing empty state");
+            controller.abort();
+            setLoading(false);
+        }, 8000);
+
+        const init = async () => {
+            try {
+                setLoading(true);
+
+                const { data: { user: authUser } } = await supabase.auth.getUser();
+
+                if (!authUser) {
+                    navigate("/login");
+                    clearTimeout(timeoutId);
+                    return;
+                }
+
+                const { data: profile, error: profileError } = await supabase
+                    .from("profiles")
+                    .select("*")
+                    .eq("id", authUser.id)
+                    .single();
+
+                setUser(authUser);
+
+                try {
+                    let query = supabase.from("cases").select("*").limit(50);
+                    
+                    if (profile?.organization_id) {
+                        query = query.eq("organization_id", profile.organization_id);
+                    } else if (profile?.user_id || authUser.id) {
+                        query = query.eq("user_id", authUser.id);
+                    }
+
+                    const { data: caseData, error: caseError } = await query;
+
+                    if (caseError) {
+                        console.error("Cases fetch error:", caseError.message);
+                        setCases([]);
+                    } else {
+                        setCases(caseData || []);
+                    }
+                } catch (caseErr) {
+                    console.error("Cases query error:", caseErr);
+                    setCases([]);
+                }
+
+            } catch (err) {
+                console.error("Dashboard init error:", err);
+                setError("Failed to load dashboard");
+            } finally {
+                setLoading(false);
+                clearTimeout(timeoutId);
+            }
+        };
+
+        init();
+
+        return () => {
+            controller.abort();
+            clearTimeout(timeoutId);
+        };
+    }, [navigate]);
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        navigate("/login");
+    };
+
+    if (loading) return <div className="flex items-center justify-center min-h-screen"><p>Loading...</p></div>;
+
+    if (error) return <div className="flex items-center justify-center min-h-screen"><p className="text-red-600">{error}</p></div>;
+
+    return (
+        <DashboardLayout>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-white p-6 rounded-xl shadow-sm border">
+                    <h3 className="text-gray-500 text-sm mb-1">Total Cases</h3>
+                    <p className="text-3xl font-bold">{cases.length}</p>
+                </div>
+                <div className="bg-white p-6 rounded-xl shadow-sm border">
+                    <h3 className="text-gray-500 text-sm mb-1">Active Hearings</h3>
+                    <p className="text-3xl font-bold">0</p>
+                </div>
+                <div className="bg-white p-6 rounded-xl shadow-sm border">
+                    <h3 className="text-gray-500 text-sm mb-1">Pending Invoices</h3>
+                    <p className="text-3xl font-bold">0</p>
+                </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+                <div className="p-4 border-b">
+                    <h3 className="font-bold">Recent Cases</h3>
+                </div>
+                <div className="p-4">
+                    {cases.length === 0 ? (
+                        <p className="text-gray-500 text-center py-10">No cases found. Start by adding a new case.</p>
+                    ) : (
+                        <ul className="divide-y">
+                            {cases.map((c) => (
+                                <li key={c.id} className="py-3 flex justify-between items-center">
+                                    <span>{c.title}</span>
+                                    <button 
+                                        onClick={() => navigate(`/advocate/cases`)}
+                                        className="text-blue-600 hover:underline text-sm"
+                                    >
+                                        View Details
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            </div>
+        </DashboardLayout>
+    );
+}
