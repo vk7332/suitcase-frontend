@@ -76,17 +76,27 @@ src/
 
 # ⚙️ Environment Variables
 
-## ⚙️ Environment Variables
+Create:
 
-Create a `.env` file in the project root and configure the required frontend environment variables for:
+```bash
+.env
+```
 
-* Supabase
-* Backend API
-* Razorpay
-* EmailJS
+Example:
 
-Never expose secret keys publicly.
+```env
+VITE_API_URL=https://suitcase-production-8b04.up.railway.app
 
+# =========================================
+# SUPABASE (PUBLIC)
+# =========================================
+VITE_SUPABASE_URL=https://qelqroebzbdfubrwgtfr.supabase.co
+VITE_SUPABASE_ANON_KEY=
+VITE_RAZORPAY_KEY_ID=
+VITE_RAZORPAY_KEY=
+# EmailJS (Frontend Mail)
+
+VITE_EMAILJS_PUBLIC_KEY=
 ```
 
 ---

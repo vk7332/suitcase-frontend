@@ -1,7 +1,5 @@
 {
     "compilerOptions": {
-        "target": "ES2020",
-        "useDefineForClassFields": true,
         "lib": [
             "DOM",
             "DOM.Iterable",
@@ -14,24 +12,22 @@
         "strict": true,
         "forceConsistentCasingInFileNames": true,
         "module": "ESNext",
-        "moduleResolution": "Node",
+        "moduleResolution": "Bundler",
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "react-jsx",
-        "baseUrl": "./src",
+        "ignoreDeprecations": "6.0",
+        "baseUrl": ".",
         "paths": {
             "@/*": [
-                "*"
+                "src/*"
             ]
-        },
-        "typeRoots": [
-            "./src/types",
-            "./node_modules/@types"
-        ]
+        }
     },
     "include": [
-        "src"
-    ],
-    "references": []
+        "src",
+        "server/**/*.ts",
+        "server/types/**/*.d.ts"
+    ]
 }
