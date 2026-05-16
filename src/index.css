@@ -1,54 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@300;400;500;600&display=swap');
-
-:root {
-  --color-sky-blue: #71c0f1;
-  --color-navy-dark: #001f3f;
-  --color-gold-accent: #E9CCAB;
-  --color-navy-glow: #0a1f47;
-}
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 body {
-    margin: 0;
-    background-color: #f8fafc;
-    font-family: 'Poppins', 'Roboto', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-.toolbox {
-  @apply bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm transition-all duration-300;
-}
-
-.toolbox:hover {
-  @apply shadow-xl border-amber-500/30;
-}
-
-@media print {
-  aside, header, nav, .sticky, button, .no-print, [title="Collapse Sidebar"], [title="Expand Sidebar"] {
-    display: none !important;
-  }
-  
-  main {
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-  }
-
-  .flex {
-    display: block !important;
-  }
-
-  body {
-    background: white !important;
-    color: black !important;
-  }
-
-  div {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
 }
